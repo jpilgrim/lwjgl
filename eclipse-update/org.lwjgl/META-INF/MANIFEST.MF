@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: LWJGL Lightweight Java Game Library
 Bundle-SymbolicName: org.lwjgl
-Bundle-Version: 2.0.0
+Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Lightweight Java Game Library Project
 Bundle-Activator: org.lwjgl.Activator
 Require-Bundle: org.eclipse.ui,
@@ -29,10 +29,11 @@ Export-Package: LZMA,
  org.lwjgl.util.vector
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
- lwjgl.jar,
- lwjgl_util.jar,
- lwjgl_util_applet.jar,
- lwjgl_test.jar,
- AppleJavaExtensions.jar,
- jinput.jar,
- lzma.jar
+ libs/AppleJavaExtensions.jar,
+ libs/asm-debug-all.jar,
+ libs/jinput.jar,
+ libs/jutils.jar,
+ libs/lwjgl_util_applet.jar,
+ libs/lwjgl_util.jar,
+ libs/lwjgl.jar,
+ libs/lzma.jar
