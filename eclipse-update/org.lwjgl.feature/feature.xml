@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.lwjgl"
-      label="Lightweight Java Game Library Project (LWJGL)"
+      id="org.lwjgl.feature"
+      label="%featureName"
       version="2.8.2.qualifier"
-      provider-name="Lightweight Java Game Library Project"
+      provider-name="%providerName"
       image="lwjgl_logo.png">
 
    <description url="http://lwjgl.org">
