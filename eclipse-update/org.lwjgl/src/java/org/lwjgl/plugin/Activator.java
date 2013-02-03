@@ -9,7 +9,7 @@
  * Contributors:
  *    Jens von Pilgrim - initial implementation
  ******************************************************************************/
-package org.lwjgl;
+package org.lwjgl.plugin;
 
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;

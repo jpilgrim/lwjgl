@@ -25,8 +25,8 @@ import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.lwjgl.LibraryPathUtil;
-import org.lwjgl.OSNotSupportedException;
+import org.lwjgl.plugin.LibraryPathUtil;
+import org.lwjgl.plugin.OSNotSupportedException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -41,6 +41,7 @@ import org.osgi.framework.Constants;
  * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathSupport
  * @see org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport
  */
+@SuppressWarnings("restriction")
 public class BuildPathSupport {
 	/**
 	* Logger for this class

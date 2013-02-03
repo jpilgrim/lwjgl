@@ -1,10 +1,6 @@
 # Maven
 target/
 
-# Binaries created with maven
-native/
-libs/
-
 # Eclipse
 .project
 build/

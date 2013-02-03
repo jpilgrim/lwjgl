@@ -4,7 +4,7 @@
 <toc label="LWJGL Documentation">
 <topic href="html/overview.html" label="Overview">
  </topic>
-	<topic href="javadoc/index.html" label="API Reference">
+	<topic href="html/api/index.html" label="API Reference">
  </topic>
 	
  <topic href="html/plugins.html" label="LWJGL Plugin Documentation">

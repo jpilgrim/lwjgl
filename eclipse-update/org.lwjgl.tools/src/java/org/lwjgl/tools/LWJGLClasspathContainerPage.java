@@ -45,12 +45,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * LWJGLClasspathContainerPage
- * There should really be more documentation here.
- *
- * @author 	Jens von Pilgrim
- * @since 	Dec 5, 2008
+ * LWJGLClasspathContainerPage There should really be more documentation here.
+ * 
+ * @author Jens von Pilgrim
+ * @since Dec 5, 2008
  */
+@SuppressWarnings("restriction")
 public class LWJGLClasspathContainerPage extends NewElementWizardPage implements
 		IClasspathContainerPage, IClasspathContainerPageExtension {
 
@@ -116,7 +116,7 @@ public class LWJGLClasspathContainerPage extends NewElementWizardPage implements
 
 		createLabel(composite, "Path");
 		labelResolvedPath = createPathLabel(composite);
-		
+
 		createLabel(composite, "Source Path");
 		labelResolvedSourcePath = createPathLabel(composite);
 
@@ -125,25 +125,25 @@ public class LWJGLClasspathContainerPage extends NewElementWizardPage implements
 
 		createLabel(composite, "Native Path");
 		labelNativePath = createPathLabel(composite);
-		
-		
+
 		update();
 
 		setControl(composite);
 	}
-	
+
 	private void createLabel(Composite parent, String strLabel) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setFont(parent.getFont());
 		label.setText(strLabel);
-		label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, false, false, 1, 1));
+		label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING,
+				false, false, 1, 1));
 	}
-		
+
 	private Label createPathLabel(Composite parent) {
-		Label label  = new Label(parent, SWT.WRAP);
+		Label label = new Label(parent, SWT.WRAP);
 		label.setFont(parent.getFont());
-		label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true,
-				true, 1, 1));
+		label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING,
+				true, true, 1, 1));
 		return label;
 	}
 
@@ -164,62 +164,57 @@ public class LWJGLClasspathContainerPage extends NewElementWizardPage implements
 
 		if (labelResolvedPath != null && !labelResolvedPath.isDisposed()) {
 			// implies all other labels to be created and not yet disposed
-			if (libEntries != null) {
-				Set<String> setLines = new TreeSet<String>();
-				IPath path;
-				for (IClasspathEntry entry : libEntries) {
-					path = entry.getPath();
-					if (path != null) {
-						setLines.add(getPathLabel(path));
-					}
-				}
-				setLabel(labelResolvedPath, setLines);
 
-				setLines.clear();
-				for (IClasspathEntry entry : libEntries) {
-					path = entry.getSourceAttachmentPath();
-					if (path != null) {
-						setLines.add(getPathLabel(path));
-					}
+			Set<String> setLines = new TreeSet<String>();
+			IPath path;
+			for (IClasspathEntry entry : libEntries) {
+				path = entry.getPath();
+				if (path != null) {
+					setLines.add(getPathLabel(path));
 				}
-				setLabel(labelResolvedSourcePath, setLines);
-
-				setLines.clear();
-				for (IClasspathEntry entry : libEntries) {
-					if (entry.getExtraAttributes() != null) {
-						for (IClasspathAttribute attr : entry
-								.getExtraAttributes()) {
-							if (IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME
-									.equals(attr.getName())) {
-								setLines.add(attr.getValue());
-								break;
-							}
-							if (JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY.equals(attr.getName())) {
-								
-							}
-						}
-					}
-				}
-				setLabel(labelResolvedDocPath, setLines);
-				
-				setLines.clear();
-				for (IClasspathEntry entry : libEntries) {
-					if (entry.getExtraAttributes() != null) {
-						for (IClasspathAttribute attr : entry
-								.getExtraAttributes()) {
-							if (JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY.equals(attr.getName())) {
-								setLines.add(attr.getValue());
-							}
-						}
-					}
-				}
-				setLabel(labelNativePath, setLines);
-
-			} else {
-				labelResolvedPath.setText("not found");
-				labelResolvedSourcePath.setText("not found");
-				labelResolvedDocPath.setText("not found");
 			}
+			setLabel(labelResolvedPath, setLines);
+
+			setLines.clear();
+			for (IClasspathEntry entry : libEntries) {
+				path = entry.getSourceAttachmentPath();
+				if (path != null) {
+					setLines.add(getPathLabel(path));
+				}
+			}
+			setLabel(labelResolvedSourcePath, setLines);
+
+			setLines.clear();
+			for (IClasspathEntry entry : libEntries) {
+				if (entry.getExtraAttributes() != null) {
+					for (IClasspathAttribute attr : entry.getExtraAttributes()) {
+						if (IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME
+								.equals(attr.getName())) {
+							setLines.add(attr.getValue());
+							break;
+						}
+						if (JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY
+								.equals(attr.getName())) {
+
+						}
+					}
+				}
+			}
+			setLabel(labelResolvedDocPath, setLines);
+
+			setLines.clear();
+			for (IClasspathEntry entry : libEntries) {
+				if (entry.getExtraAttributes() != null) {
+					for (IClasspathAttribute attr : entry.getExtraAttributes()) {
+						if (JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY
+								.equals(attr.getName())) {
+							setLines.add(attr.getValue());
+						}
+					}
+				}
+			}
+			setLabel(labelNativePath, setLines);
+
 		}
 		if (status != null)
 			updateStatus(status);
@@ -241,16 +236,21 @@ public class LWJGLClasspathContainerPage extends NewElementWizardPage implements
 	}
 
 	private String getPathLabel(IPath path) {
-		StringBuffer buf = new StringBuffer(BasicElementLabels
-				.getResourceName(path.lastSegment()));
+		StringBuffer buf = new StringBuffer(
+				BasicElementLabels.getResourceName(path.lastSegment()));
 		buf.append(JavaElementLabels.CONCAT_STRING);
 		buf.append(BasicElementLabels.getPathLabel(path.removeLastSegments(1),
 				true));
 		return buf.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.ui.wizards.IClasspathContainerPageExtension#initialize(org.eclipse.jdt.core.IJavaProject, org.eclipse.jdt.core.IClasspathEntry[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.jdt.ui.wizards.IClasspathContainerPageExtension#initialize
+	 * (org.eclipse.jdt.core.IJavaProject,
+	 * org.eclipse.jdt.core.IClasspathEntry[])
 	 */
 	public void initialize(IJavaProject project,
 			IClasspathEntry[] currentEntries) {

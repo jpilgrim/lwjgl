@@ -6,57 +6,73 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">	
     <modelVersion>4.0.0</modelVersion>
 	<groupId>org.lwjgl.plugins</groupId>
 	<artifactId>org.lwjgl</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>2.8.2-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 
 	<parent>
 		<groupId>org.lwjgl</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>2.8.2-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 	
+	
+	
 	<dependencies>
-        <dependency>
-            <groupId>org.lwjgl.lwjgl</groupId>
-            <artifactId>lwjgl</artifactId>
-            <version>2.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lwjgl.lwjgl</groupId>
-            <artifactId>lwjgl_util</artifactId>
-            <version>2.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lwjgl.lwjgl</groupId>
-            <artifactId>lwjgl_util_applet</artifactId>
-            <version>2.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.apple</groupId>
-            <artifactId>AppleJavaExtensions</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>4.0</version>
-        </dependency>
-    </dependencies>
+            <dependency>
+                <groupId>org.lwjgl.lwjgl</groupId>
+                <artifactId>lwjgl</artifactId>
+                <version>${lwjgl-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lwjgl.lwjgl</groupId>
+                <artifactId>lwjgl_util</artifactId>
+                <version>${lwjgl-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lwjgl.lwjgl</groupId>
+                <artifactId>lwjgl_util_applet</artifactId>
+                <version>${lwjgl-version}</version>
+            </dependency>
+            <!--
+            <dependency>
+                <groupId>org.lwjgl.lwjgl</groupId>
+                <artifactId>lwjgl</artifactId>
+                <version>${lwjgl-version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.lwjgl.lwjgl</groupId>
+                <artifactId>lwjgl</artifactId>
+                <version>${lwjgl-version}</version>
+                <classifier>javadoc</classifier>
+            </dependency>
+            -->
+            <dependency>
+	            <groupId>com.apple</groupId>
+	            <artifactId>AppleJavaExtensions</artifactId>
+	            <version>1.4</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.ow2.asm</groupId>
+	            <artifactId>asm-debug-all</artifactId>
+	            <version>4.0</version>
+	        </dependency>
+        </dependencies>
 	
 	<build>
 	   <plugins>
+	   
 	       <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
                 <execution>
+                		<id>copy lwjgl binaries</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -64,9 +80,23 @@
                         <configuration>
                             <outputDirectory>libs</outputDirectory>
                             <stripVersion>true</stripVersion>
-                            <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>org.lwjgl-libs,org.lwjgl.source-libs,com.ibm.icu.base,javax.annotation,javax.inject,javax.xml,jinput-platform,lwjgl-platform,org.apache.batik.css,org.apache.batik.util.gui,org.apache.batik.util,org.eclipse.core.commands,org.eclipse.core.contenttype,org.eclipse.core.databinding,org.eclipse.core.databinding.observable,org.eclipse.core.databinding.property,org.eclipse.core.expressions,org.eclipse.core.filesystem,org.eclipse.core.jobs,org.eclipse.core.resources,org.eclipse.core.runtime,org.eclipse.e4.core.commands,org.eclipse.e4.core.contexts,org.eclipse.e4.core.di.extensions,org.eclipse.e4.core.di,org.eclipse.e4.core.services,org.eclipse.e4.ui.bindings,org.eclipse.e4.ui.css.core,org.eclipse.e4.ui.css.swt,org.eclipse.e4.ui.css.swt.theme,org.eclipse.e4.ui.di,org.eclipse.e4.ui.model.workbench,org.eclipse.e4.ui.services,org.eclipse.e4.ui.widgets,org.eclipse.e4.ui.workbench,org.eclipse.e4.ui.workbench.renderers.swt,org.eclipse.e4.ui.workbench.swt,org.eclipse.e4.ui.workbench3,org.eclipse.emf.common,org.eclipse.emf.ecore.change,org.eclipse.emf.ecore,org.eclipse.emf.ecore.xmi,org.eclipse.equinox.app,org.eclipse.equinox.common,org.eclipse.equinox.ds,org.eclipse.equinox.event,org.eclipse.equinox.preferences,org.eclipse.equinox.registry,org.eclipse.equinox.util,org.eclipse.help,org.eclipse.jface.databinding,org.eclipse.jface,org.eclipse.osgi,org.eclipse.osgi.services,org.eclipse.swt.cocoa.macosx,org.eclipse.swt.cocoa.macosx.x86_64,org.eclipse.swt.gtk.linux.x86,org.eclipse.swt.gtk.linux.x86_64,org.eclipse.swt,org.eclipse.swt.win32.win32.x86,org.eclipse.swt.win32.win32.x86_64,org.eclipse.ui,org.eclipse.ui.workbench,org.w3c.css.sac,org.w3c.dom.events,org.w3c.dom.smil,org.w3c.dom.svg</excludeArtifactIds>
-                            <includeArtifacIds>jinput,lwjgl_test,lwjgl_util_applet,lwjgl_util,lwjgl,jutils,lzmna,AppleJavaExtensions</includeArtifacIds>
+                            <excludeClassifiers>sources,javadoc</excludeClassifiers>
+                            <includeArtifactIds>asm-debug-all,jinput,lwjgl_test,lwjgl_util_applet,lwjgl_util,lwjgl,jutils,lzmna,AppleJavaExtensions</includeArtifactIds>
+                        </configuration>
+                 </execution>
+                <execution> 
+                		<id>copy lwjgl sources</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src-lwjgl</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                            <classifier>sources</classifier>
+                            <excludeArtifactIds>AppleJavaExtensions,asm-debug-all</excludeArtifactIds>
+                            <includeArtifactIds>lwjgl,lwjgl_util,lwjgl_util_applet</includeArtifactIds>
+                            <excludeTransitive>true</excludeTransitive>
                         </configuration>
                     </execution>
             </executions>
@@ -117,18 +147,47 @@
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.5</version>
-                <configuration>
-                  <filesets>
-                    <fileset>
-                      <directory>native</directory>
-                      <followSymlinks>false</followSymlinks>
-                    </fileset>
-                    <fileset>
-                      <directory>libs</directory>
-                      <followSymlinks>false</followSymlinks>
-                    </fileset>
-                  </filesets>
-                </configuration>
+                <executions>
+                	<execution>
+                		<id>remove all created artifacts</id>
+                		<phase>clean</phase>
+                		<goals>
+                            <goal>clean</goal>
+                        </goals>
+		                <configuration>
+		                  <filesets>
+		                    <fileset>
+		                      <directory>native</directory>
+		                      <followSymlinks>false</followSymlinks>
+		                    </fileset>
+		                    <fileset>
+		                      <directory>libs</directory>
+		                      <followSymlinks>false</followSymlinks>
+		                    </fileset>
+		                    <fileset>
+		                      <directory>src-lwjgl</directory>
+		                      <followSymlinks>false</followSymlinks>
+		                    </fileset>
+		                  </filesets>
+		                </configuration>
+                	</execution>
+                    <execution>
+                            <id>remove lwjgl sources</id>
+                            <phase>install</phase>
+                            <goals>
+                            	<goal>clean</goal>
+                        	</goals>
+                            <configuration>
+                                <filesets>
+				                    <fileset>
+				                      <directory>src-lwjgl/org</directory>
+				                      <followSymlinks>false</followSymlinks>
+				                    </fileset>
+		                  		</filesets>
+                            </configuration>
+                    </execution>
+                    
+            </executions>
               </plugin>
 	   </plugins>
 	</build>

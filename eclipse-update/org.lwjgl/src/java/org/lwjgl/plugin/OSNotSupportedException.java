@@ -9,7 +9,7 @@
  * Contributors:
  *    Jens von Pilgrim - initial implementation
  ******************************************************************************/
-package org.lwjgl;
+package org.lwjgl.plugin;
 
 /**
  * Exception thrown by library loader if operating system is not supported.
@@ -19,6 +19,8 @@ package org.lwjgl;
  */
 public class OSNotSupportedException extends Exception {
 
+	private static final long serialVersionUID = -2314043956391285661L;
+	
 	String strOSName;
 	String strOSArch;
 	/**

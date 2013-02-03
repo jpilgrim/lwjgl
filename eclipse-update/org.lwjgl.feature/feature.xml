@@ -2,7 +2,7 @@
 <feature
       id="org.lwjgl"
       label="Lightweight Java Game Library Project (LWJGL)"
-      version="2"
+      version="2.8.2.qualifier"
       provider-name="Lightweight Java Game Library Project"
       image="lwjgl_logo.png">
 
@@ -10,11 +10,7 @@
       This feature provides easy access to the
 Lightweight Java Game Library (LWJGL)
 for Eclipse plugin developers. It includes
-- java and native libraries (Windows, Mac OS X, Linux, Solaris)
-- source code
-- javadoc
-- info plugin
-- library tool
+- java and native libraries (Windows, Mac OS X, Linux)
    </description>
 
    <copyright url="http://lwjgl.org/credits.php">
@@ -68,26 +64,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
    <plugin
          id="org.lwjgl"
-         download-size="3700"
-         install-size="3700"
-         version="2"/>
-
-   <plugin
-         id="org.lwjgl.doc"
-         download-size="2800"
-         install-size="2800"
-         version="2"/>
-
-   <plugin
-         id="org.lwjgl.source"
-         download-size="1200"
-         install-size="1200"
-         version="2"/>
-
-   <plugin
-         id="org.lwjgl.info"
-         download-size="50"
-         install-size="50"
-         version="2"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

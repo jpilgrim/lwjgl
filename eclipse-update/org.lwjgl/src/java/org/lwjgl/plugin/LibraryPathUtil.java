@@ -9,7 +9,7 @@
  * Contributors:
  *    Jens von Pilgrim - initial implementation
  ******************************************************************************/
-package org.lwjgl;
+package org.lwjgl.plugin;
 
 import java.io.File;
 import java.io.IOException;

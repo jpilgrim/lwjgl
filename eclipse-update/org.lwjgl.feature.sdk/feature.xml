@@ -2,7 +2,7 @@
 <feature
       id="org.lwjgl.sdk"
       label="Lightweight Java Game Library (LWJGL)"
-      version="2"
+      version="2.8.2.qualifier"
       provider-name="Lightweight Java Game Library Project"
       image="lwjgl_logo.png">
 
@@ -65,31 +65,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    </url>
 
    <requires>
-      <import feature="org.lwjgl" version="2"/>
+      <import feature="org.lwjgl" version="2.8.2.qualifier"/>
    </requires>
 
    <plugin
          id="org.lwjgl.doc"
-         download-size="2800"
-         install-size="2800"
-         version="2"/>
-
-   <plugin
-         id="org.lwjgl.source"
-         download-size="1200"
-         install-size="1200"
-         version="2"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
    <plugin
          id="org.lwjgl.info"
-         download-size="50"
-         install-size="50"
-         version="2"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.lwjgl.tools"
-         download-size="16"
-         install-size="16"
-         version="2"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+    <plugin
+         id="org.lwjgl.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.lwjgl.info.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.lwjgl.tools.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>     
 
 </feature>

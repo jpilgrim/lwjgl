@@ -11,7 +11,7 @@
    </extension>
 
     <extension point="org.eclipse.pde.core.javadoc">
-     <javadoc path="doc.zip!/javadoc/" archive="true">
+     <javadoc path="html/api" archive="false">
         <plugin id="org.lwjgl"/>
      </javadoc>
   </extension>
