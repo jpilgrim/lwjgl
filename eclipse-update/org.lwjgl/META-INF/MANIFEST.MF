@@ -37,4 +37,4 @@ Bundle-ClassPath: .,
  libs/jutils.jar,
  libs/lwjgl_util_applet.jar,
  libs/lzma.jar
-Bundle-Version: 2.8.2.qualifier
+Bundle-Version: 2.8.5.qualifier
