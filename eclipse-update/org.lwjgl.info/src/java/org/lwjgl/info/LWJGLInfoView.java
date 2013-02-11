@@ -12,6 +12,8 @@
 
 package org.lwjgl.info;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -21,12 +23,13 @@ import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.ContextCapabilities;
@@ -37,12 +40,11 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Registry;
 
 /**
- * LWJGLInfoView
- * There should really be more documentation here.
- *
- * @author 	Jens von Pilgrim
- * @version	$Revision$
- * @since 	Nov 23, 2010
+ * LWJGLInfoView There should really be more documentation here.
+ * 
+ * @author Jens von Pilgrim
+ * @version $Revision$
+ * @since Nov 23, 2010
  */
 public class LWJGLInfoView extends ViewPart {
 
@@ -50,27 +52,45 @@ public class LWJGLInfoView extends ViewPart {
 
 	static final int TAB = 16;
 
-	/** 
+	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite i_parent) {
 
-		Text info = new Text(i_parent, SWT.READ_ONLY | SWT.LEFT | SWT.MULTI
-				| SWT.H_SCROLL | SWT.V_SCROLL);
-
-		GLCanvas canvas = new GLCanvas(i_parent, SWT.NONE, new GLData());
-		canvas.setCurrent();
+		Composite comp = new Composite(i_parent, SWT.NONE);
+		comp.setLayout(new GridLayout());
+		
+		GLCanvas canvas = null;
+		String infoString=null;
 		try {
+			canvas = new GLCanvas(comp, SWT.NONE, new GLData());
+			canvas.setCurrent();
 			GLContext.useContext(canvas);
-		} catch (LWJGLException ex) {
-			// TODO Implement catch block for LWJGLException
-			ex.printStackTrace();
+			infoString = gatherInformation();
+			canvas.dispose();
+		} catch (Exception ex) {
+			if (canvas != null) {
+				canvas.dispose();
+			}
+			StringWriter sw = new StringWriter();
+	        PrintWriter pw = new PrintWriter(sw, true);
+	        ex.printStackTrace(pw);
+	        pw.flush();
+	        sw.flush();
+	        if (infoString==null) {
+	        	infoString = "Cannot retrieve any OpenGL information";
+	        } 
+	        infoString += "Unknown error gathering OpenGL information\n"+ex.getMessage()+"\nException:\n"+sw.toString();
 		}
-
-		String infoString = gatherInformation();
+		Text info = new Text(comp, SWT.READ_ONLY | SWT.LEFT | SWT.MULTI
+				| SWT.H_SCROLL | SWT.V_SCROLL);
+		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		info.setText(infoString);
+		
+
 	}
 
 	static String getFeatureVersion(String myFeatureId) {
@@ -89,7 +109,7 @@ public class LWJGLInfoView extends ViewPart {
 	}
 
 	/**
-	 * @param i_canvas 
+	 * @param i_canvas
 	 * @return
 	 */
 	private static String gatherInformation() {
@@ -124,7 +144,11 @@ public class LWJGLInfoView extends ViewPart {
 		gatherCapabilities(caps, capInfos);
 		infoGroupedCaps(strb, capInfos);
 
-		Display.destroy();
+		try {
+			Display.destroy();		
+		}
+		catch (Exception ex) {
+		}
 
 		return strb.toString();
 	}
@@ -596,8 +620,9 @@ public class LWJGLInfoView extends ViewPart {
 		System.out.println(s);
 	}
 
-	/** 
+	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	@Override

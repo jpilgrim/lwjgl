@@ -30,7 +30,7 @@ public class LibraryPathUtil {
 
 	public static final String LWJGL_SYSTEM_PROPERTY = "org.lwjgl.librarypath";
 
-	public static String[] NATIVEPATH = new String[] { "windows", "macosx",
+	public static String[] NATIVEPATH = new String[] { "windows", "osx",
 			"linux", "solaris" };
 
 	/**

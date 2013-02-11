@@ -17,7 +17,10 @@ import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
@@ -31,20 +34,19 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.GLU;
 
 /**
- * Simple view for testing whether LWJGL is installed correctly on your 
- * system.
- * The example is based on 
- * <a href="http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet195.java?view=markup&content-type=text%2Fvnd.viewcvs-markup&revision=HEAD">snippet 195</a>.
- *
- * @author 	Jens von Pilgrim
- * @version	$Revision$
- * @since 	16.07.2007
+ * Simple view for testing whether LWJGL is installed correctly on your system.
+ * The example is based on <a href=
+ * "http://git.eclipse.org/c/platform/eclipse.platform.swt.git/plain/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet195.java"
+ * >snippet 195</a>.
+ * 
+ * @author Jens von Pilgrim
+ * @version $Revision$
+ * @since 16.07.2007
  * @headurl $HeadURL$
  */
 public class LWJGLTestView extends ViewPart {
 
 	GLCanvas canvas;
-
 	FpsStatusLineItem fpsstatuslineitem;
 
 	static String getFeatureVersion(String myFeatureId) {
@@ -62,8 +64,9 @@ public class LWJGLTestView extends ViewPart {
 		return "Feature not found";
 	}
 
-	/** 
+	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
@@ -74,14 +77,14 @@ public class LWJGLTestView extends ViewPart {
 
 		IStatusLineManager statusLine = this.getViewSite().getActionBars()
 				.getStatusLineManager();
-
 		fpsstatuslineitem = new FpsStatusLineItem();
 		statusLine.add(fpsstatuslineitem);
 
 		GLData data = new GLData();
+		
 		data.doubleBuffer = true;
+		
 		canvas = new GLCanvas(parent, SWT.NONE, data);
-
 		canvas.setCurrent();
 		try {
 			GLContext.useContext(canvas);
@@ -114,19 +117,29 @@ public class LWJGLTestView extends ViewPart {
 		GL11.glClearDepth(1.0);
 		GL11.glLineWidth(2);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-
-		Display.getCurrent().asyncExec(initRunnable());
+		
+		final Runnable run = initRunnable();
+		
+		canvas.addListener(SWT.Paint, new Listener() {
+			public void handleEvent(Event event) {
+				run.run();
+			}
+		});
+		
+		Display.getCurrent().asyncExec(run);
 
 	}
 
-	/** 
+	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	@Override
 	public void setFocus() {
 		canvas.setFocus();
 	}
+	
 
 	static void drawTorus(float r, float R, int nsides, int rings) {
 		float ringDelta = 2.0f * (float) Math.PI / rings;
@@ -143,12 +156,8 @@ public class LWJGLTestView extends ViewPart {
 				float cosPhi = (float) Math.cos(phi);
 				float sinPhi = (float) Math.sin(phi);
 				float dist = R + r * cosPhi;
-				GL11
-						.glNormal3f(cosTheta1 * cosPhi, -sinTheta1 * cosPhi,
-								sinPhi);
-				GL11
-						.glVertex3f(cosTheta1 * dist, -sinTheta1 * dist, r
-								* sinPhi);
+				GL11.glNormal3f(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
+				GL11.glVertex3f(cosTheta1 * dist, -sinTheta1 * dist, r * sinPhi);
 				GL11.glNormal3f(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
 				GL11.glVertex3f(cosTheta * dist, -sinTheta * dist, r * sinPhi);
 			}
@@ -165,9 +174,7 @@ public class LWJGLTestView extends ViewPart {
 
 			public void run() {
 				if (!canvas.isDisposed() && canvas.isVisible()) {
-
 					fpsstatuslineitem.renderPassStarted();
-
 					canvas.setCurrent();
 					try {
 						GLContext.useContext(canvas);
@@ -180,9 +187,7 @@ public class LWJGLTestView extends ViewPart {
 					GL11.glLoadIdentity();
 					GL11.glTranslatef(0.0f, 0.0f, -10.0f);
 					float frot = rot;
-					GL11
-							.glRotatef(0.15f * rot, 2.0f * frot, 10.0f * frot,
-									1.0f);
+					GL11.glRotatef(0.15f * rot, 2.0f * frot, 10.0f * frot, 1.0f);
 					GL11.glRotatef(0.3f * rot, 3.0f * frot, 1.0f * frot, 1.0f);
 					rot++;
 					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -191,10 +196,8 @@ public class LWJGLTestView extends ViewPart {
 							15, 15);
 
 					canvas.swapBuffers();
-
 					fpsstatuslineitem.renderPassFinished();
 					Display.getCurrent().asyncExec(this);
-
 				}
 			}
 		};
