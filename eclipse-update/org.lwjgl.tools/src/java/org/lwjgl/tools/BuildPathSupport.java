@@ -31,12 +31,12 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
 /**
- * This class resolves the actual LWJGL library path, that is the location
- * of the jars in the org.lwjgl plugin.
+ * This class resolves the actual LWJGL library path, that is the location of
+ * the jars in the org.lwjgl plugin.
  * 
  * Following the "monkey sees, monkey does"-rule, this code was copied and
- * modified from the plugin org.eclipse.jdt.junit . This code is published
- * under the EPL and (c) by IBM and others. 
+ * modified from the plugin org.eclipse.jdt.junit . This code is published under
+ * the EPL and (c) by IBM and others.
  * 
  * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathSupport
  * @see org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport
@@ -44,9 +44,10 @@ import org.osgi.framework.Constants;
 @SuppressWarnings("restriction")
 public class BuildPathSupport {
 	/**
-	* Logger for this class
-	*/
-	private static final Logger log = Logger.getLogger(BuildPathSupport.class.getName());
+	 * Logger for this class
+	 */
+	private static final Logger log = Logger.getLogger(BuildPathSupport.class
+			.getName());
 
 	public static class LWJGLPluginDescription {
 		private final String strBundleId;
@@ -67,7 +68,34 @@ public class BuildPathSupport {
 		public String getBundleId() {
 			return strBundleId;
 		}
+	}
 
+	private static class LibPathEntryData {
+		public final IPath jarLocation;
+		public final IPath srcLocation;
+		public final String docLocation;
+		public final String nativeLocation;
+
+		public LibPathEntryData(IPath jarLocation, IPath srcLocation,
+				String docLocation, String nativeLocation) {
+			super();
+			this.jarLocation = jarLocation;
+			this.srcLocation = srcLocation;
+			this.docLocation = docLocation;
+			this.nativeLocation = nativeLocation;
+		}
+
+	}
+
+	private static LibPathEntryData libdata(String jarLocation,
+			IPath srcLocation, String docLocation, String nativeLocation) {
+		return new LibPathEntryData(LWJGL_LIBS.append(jarLocation),
+				srcLocation, docLocation, nativeLocation);
+	}
+
+	private static LibPathEntryData libdata(String jarLocation) {
+		return new LibPathEntryData(LWJGL_LIBS.append(jarLocation), null, null,
+				null);
 	}
 
 	public static final LWJGLPluginDescription LWJGL_PLUGIN = new LWJGLPluginDescription(
@@ -79,19 +107,20 @@ public class BuildPathSupport {
 	public static final LWJGLPluginDescription LWJGL_DOC_PLUGIN = new LWJGLPluginDescription(
 			"org.lwjgl.doc"); //$NON-NLS-1$
 
-	public static final String[] JAR_FILES = { "lwjgl.jar", "lwjgl_util.jar",
-			"lwjgl_util_applet.jar", "jinput.jar" };
+	public static IPath LWJGL_LIBS = getBundleLocation(LWJGL_PLUGIN).append(
+			"lib");
 
-	public static final String[] SRC_FILES = { "lwjglsrc.zip",
-			"lwjgl_utilsrc.zip", "lwjgl_util_applet.zip", null };
-
-	public static final String[] DOC_FILES = { "doc.zip", "doc.zip", "doc.zip",
-			"doc.zip" };
-
-	public static String[] NATIVEPATH = new String[] { "windows", "macosx",
-			"linux", "solaris" };
-	
-	
+	public static final LibPathEntryData[] LIBS = new LibPathEntryData[] {
+			libdata("lwjgl.jar", getBundleLocation(LWJGL_SRC_PLUGIN),
+					getBundleLocation(LWJGL_DOC_PLUGIN).toOSString(),
+					getNativeLocation()),
+			libdata("lwjgl_util.jar", getBundleLocation(LWJGL_SRC_PLUGIN),
+					null, null),
+			libdata("lwjgl_util_applet.jar",
+					getBundleLocation(LWJGL_SRC_PLUGIN), null, null),
+			libdata("jinput.jar", null, null, getNativeLocation()),
+			libdata("jutils.jar"), libdata("lzma.jar"),
+			libdata("asm-debug-all.jar"), libdata("AppleJavaExtensions.jar") };
 
 	public static IPath getBundleLocation(LWJGLPluginDescription pluginDesc) {
 		Bundle bundle = pluginDesc.getBundle();
@@ -107,22 +136,8 @@ public class BuildPathSupport {
 		String fullPath = new File(local.getPath()).getAbsolutePath();
 		return Path.fromOSString(fullPath);
 	}
-	
-	
 
-	/**
-	 * 
-	 * /Devel/Applications/Eclipse3.4/plugins/org.lwjgl.source_2.0.1/src/org.lwjgl_2.0.1/lwjglsrc.zip
-	 * /Devel/Applications/Eclipse3.4/plugins/org.lwjgl.source_2.0.1/src/org.lwjgl_2.0.1/lwjgl_utilsrc.zip
-	 * /Devel/Applications/Eclipse3.4/plugins/org.lwjgl.source_2.0.1/src/org.lwjgl_2.0.1/lwjgl_util_applet.zip
-	 * 
-	 * 
-	 * @param pluginDesc
-	 * @return
-	 */
-	public static IPath getSourceLocation(String filename) {
-		if (filename==null)
-			return null;
+	public static IPath getLWJGLSourceLocation() {
 		Bundle bundleSrc = LWJGL_SRC_PLUGIN.getBundle();
 		if (bundleSrc == null)
 			return null;
@@ -140,9 +155,7 @@ public class BuildPathSupport {
 
 		File bundleLoc = new File(bundlePath);
 		if (bundleLoc.isDirectory()) {
-			String fullPath = bundleLoc.getAbsolutePath() + File.separator
-					+ "src" + File.separator + LWJGL_PLUGIN.getBundleId() + '_'
-					+ version + File.separator + filename;
+			String fullPath = bundleLoc.getAbsolutePath();
 			return Path.fromOSString(fullPath);
 		} else if (bundleLoc.isFile()) {
 			return Path.fromOSString(bundleLoc.getAbsolutePath());
@@ -151,17 +164,7 @@ public class BuildPathSupport {
 		return null;
 	}
 
-	/**
-	 * jar:file:/Devel/Applications/Eclipse3.4/plugins/org.lwjgl.doc_2.0.1/doc.zip!/javadoc
-	 * 
-	 * @param pluginDesc
-	 * @param filename 
-	 * @return
-	 */
-	public static String getJavadocLocation(String filename) {
-		if (filename==null)
-			return null;
-		
+	public static String getLWJGLJavadocLocation(String filename) {
 		Bundle bundleDoc = LWJGL_DOC_PLUGIN.getBundle();
 		if (bundleDoc == null)
 			return null;
@@ -179,9 +182,8 @@ public class BuildPathSupport {
 
 		File bundleLoc = new File(bundlePath);
 		if (bundleLoc.isDirectory()) {
-			String fullPath = "jar:file:" + bundleLoc.getAbsolutePath()
-					+ File.separator +  filename + "!"
-					+ File.separator + "javadoc" + File.separator;
+			String fullPath = "jar:file:" + bundleLoc.getAbsolutePath() + "!"
+					+ filename;
 			return fullPath;
 		} else if (bundleLoc.isFile()) {
 			return bundleLoc.getAbsolutePath();
@@ -189,9 +191,9 @@ public class BuildPathSupport {
 
 		return null;
 	}
-	
+
 	public static String getNativeLocation() {
-		
+
 		String basePath;
 		try {
 			basePath = LibraryPathUtil.getRelativeLWJGLLibraryPath();
@@ -199,7 +201,7 @@ public class BuildPathSupport {
 			log.warning(ex.toString()); //$NON-NLS-1$
 			return null;
 		}
-		
+
 		Bundle bundle = LWJGL_PLUGIN.getBundle();
 		if (bundle == null)
 			return null;
@@ -211,8 +213,8 @@ public class BuildPathSupport {
 
 		File bundleLoc = new File(bundlePath);
 		if (bundleLoc.isDirectory()) {
-			String fullPath = bundleLoc.getAbsolutePath()
-					+ File.separator + basePath;
+			String fullPath = bundleLoc.getAbsolutePath() + File.separator
+					+ basePath;
 			return fullPath;
 		} else if (bundleLoc.isFile()) {
 			return null;
@@ -241,25 +243,18 @@ public class BuildPathSupport {
 	public static IClasspathEntry[] getLWJGLLibraryEntries() {
 		IPath bundleBase = getBundleLocation(LWJGL_PLUGIN);
 		if (bundleBase != null) {
-			IClasspathEntry[] entries = new IClasspathEntry[JAR_FILES.length];
-			for (int i = 0; i < JAR_FILES.length; i++) {
-				IPath jarLocation = bundleBase.append(JAR_FILES[i]); //$NON-NLS-1$
-				IPath srcLocation = getSourceLocation(SRC_FILES[i]);
-				String nativeLocation = getNativeLocation();
-				String javadocLocation = getJavadocLocation(DOC_FILES[i]);
+			IClasspathEntry[] entries = new IClasspathEntry[LIBS.length];
+			for (int i = 0; i < LIBS.length; i++) {
 				IAccessRule[] accessRules = {};
-				IClasspathAttribute[] attributes = { // 
-						JavaCore
-								.newClasspathAttribute(
-										IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
-										javadocLocation),
+				IClasspathAttribute[] attributes = { //
+						JavaCore.newClasspathAttribute(
+								IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
+								LIBS[i].docLocation),
 						JavaCore.newClasspathAttribute(
 								JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY,
-								nativeLocation) };
+								LIBS[i].nativeLocation) };
 
-				// return JavaCore.newClasspathAttribute(JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY, dialog.getNativeLibraryPath());
-
-				entries[i] = JavaCore.newLibraryEntry(jarLocation, srcLocation,
+				entries[i] = JavaCore.newLibraryEntry(LIBS[i].jarLocation, LIBS[i].srcLocation,
 						null, accessRules, attributes, false);
 			}
 			return entries;

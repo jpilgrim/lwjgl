@@ -72,7 +72,7 @@ public class LWJGLTestView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		String strVersion = getFeatureVersion("org.lwjgl");
+		String strVersion = getFeatureVersion("org.lwjgl.feature");
 		this.setPartName("org.lwjgl " + strVersion);
 
 		IStatusLineManager statusLine = this.getViewSite().getActionBars()

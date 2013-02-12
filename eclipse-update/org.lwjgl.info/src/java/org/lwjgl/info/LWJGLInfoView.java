@@ -117,7 +117,7 @@ public class LWJGLInfoView extends ViewPart {
 
 		try {
 			infoNL(strb, "LWJGL feature version",
-					getFeatureVersion("org.lwjgl"));
+					getFeatureVersion("org.lwjgl.feature"));
 		} catch (Exception ex) {
 			warnNL(strb, "Error retrieving feature version: " + ex.getMessage());
 		}
