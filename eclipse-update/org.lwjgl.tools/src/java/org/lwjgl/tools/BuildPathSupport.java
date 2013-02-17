@@ -14,6 +14,7 @@ package org.lwjgl.tools;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -28,7 +29,6 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.lwjgl.plugin.LibraryPathUtil;
 import org.lwjgl.plugin.OSNotSupportedException;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 
 /**
  * This class resolves the actual LWJGL library path, that is the location of
@@ -49,26 +49,9 @@ public class BuildPathSupport {
 	private static final Logger log = Logger.getLogger(BuildPathSupport.class
 			.getName());
 
-	public static class LWJGLPluginDescription {
-		private final String strBundleId;
-
-		private Bundle bundle = null;
-
-		public LWJGLPluginDescription(String bundleId) {
-			strBundleId = bundleId;
-
-		}
-
-		public Bundle getBundle() {
-			if (bundle == null)
-				bundle = Platform.getBundle(strBundleId);
-			return bundle;
-		}
-
-		public String getBundleId() {
-			return strBundleId;
-		}
-	}
+	public static final String LWJGL_PLUGIN_ID = "org.lwjgl";
+	public static final String LWJGL_SOURCE_PLUGIN_ID = "org.lwjgl.source";
+	public static final String LWJGL_DOC_PLUGIN_ID = "org.lwjgl.doc";
 
 	private static class LibPathEntryData {
 		public final IPath jarLocation;
@@ -87,43 +70,60 @@ public class BuildPathSupport {
 
 	}
 
-	private static LibPathEntryData libdata(String jarLocation,
-			IPath srcLocation, String docLocation, String nativeLocation) {
+	private static LibPathEntryData libdata(IPath LWJGL_LIBS,
+			String jarLocation, IPath srcLocation, String docLocation,
+			String nativeLocation) {
 		return new LibPathEntryData(LWJGL_LIBS.append(jarLocation),
 				srcLocation, docLocation, nativeLocation);
 	}
 
-	private static LibPathEntryData libdata(String jarLocation) {
+	private static LibPathEntryData libdata(IPath LWJGL_LIBS, String jarLocation) {
 		return new LibPathEntryData(LWJGL_LIBS.append(jarLocation), null, null,
 				null);
 	}
 
-	public static final LWJGLPluginDescription LWJGL_PLUGIN = new LWJGLPluginDescription(
-			"org.lwjgl"); //$NON-NLS-1$
+	public final static LibPathEntryData[] createLibData() {
 
-	public static final LWJGLPluginDescription LWJGL_SRC_PLUGIN = new LWJGLPluginDescription(
-			"org.lwjgl.source"); //$NON-NLS-1$
+		String lwjglPath = getBundleLocation(LWJGL_PLUGIN_ID);
+		if (lwjglPath == null) {
+			return null;
+		}
+		String lwjglSrcPath = lwjglPath.replaceFirst(LWJGL_PLUGIN_ID,
+				LWJGL_SOURCE_PLUGIN_ID)+".jar";
+		String lwjglDocPath = lwjglPath.replaceFirst(LWJGL_PLUGIN_ID,
+				LWJGL_DOC_PLUGIN_ID)+".jar";
 
-	public static final LWJGLPluginDescription LWJGL_DOC_PLUGIN = new LWJGLPluginDescription(
-			"org.lwjgl.doc"); //$NON-NLS-1$
+		IPath lwjPath = Path.fromOSString(lwjglPath);
+		IPath srcPath = Path.fromOSString(lwjglSrcPath);
+		IPath docPath = Path.fromOSString(lwjglDocPath);
+		IPath libPath = lwjPath.append("libs");
 
-	public static IPath LWJGL_LIBS = getBundleLocation(LWJGL_PLUGIN).append(
-			"lib");
+		if (!srcPath.toFile().exists()) {
+			srcPath = null;
+		}
+		if (!docPath.toFile().exists()) {
+			lwjglDocPath = null;
+		} else {
+			lwjglDocPath = "jar:file:" + lwjglDocPath +"!/html/api";
+		}
 
-	public static final LibPathEntryData[] LIBS = new LibPathEntryData[] {
-			libdata("lwjgl.jar", getBundleLocation(LWJGL_SRC_PLUGIN),
-					getBundleLocation(LWJGL_DOC_PLUGIN).toOSString(),
-					getNativeLocation()),
-			libdata("lwjgl_util.jar", getBundleLocation(LWJGL_SRC_PLUGIN),
-					null, null),
-			libdata("lwjgl_util_applet.jar",
-					getBundleLocation(LWJGL_SRC_PLUGIN), null, null),
-			libdata("jinput.jar", null, null, getNativeLocation()),
-			libdata("jutils.jar"), libdata("lzma.jar"),
-			libdata("asm-debug-all.jar"), libdata("AppleJavaExtensions.jar") };
+		String nativeLocation = getNativeLocation();
 
-	public static IPath getBundleLocation(LWJGLPluginDescription pluginDesc) {
-		Bundle bundle = pluginDesc.getBundle();
+		return new LibPathEntryData[] {
+				libdata(libPath, "lwjgl.jar", srcPath, lwjglDocPath,
+						nativeLocation),
+				libdata(libPath, "lwjgl_util.jar", srcPath, lwjglDocPath, null),
+				libdata(libPath, "lwjgl_util_applet.jar", srcPath,
+						lwjglDocPath, null),
+				libdata(libPath, "jinput.jar", null, null, nativeLocation),
+				libdata(libPath, "jutils.jar"), libdata(libPath, "lzma.jar"),
+				libdata(libPath, "asm-debug-all.jar"),
+				libdata(libPath, "AppleJavaExtensions.jar") };
+	}
+
+	private static String getBundleLocation(String symbolicName) {
+
+		Bundle bundle = Platform.getBundle(symbolicName);
 		if (bundle == null)
 			return null;
 
@@ -134,65 +134,11 @@ public class BuildPathSupport {
 			return null;
 		}
 		String fullPath = new File(local.getPath()).getAbsolutePath();
-		return Path.fromOSString(fullPath);
+		return fullPath;
+		// return Path.fromOSString(fullPath);
 	}
 
-	public static IPath getLWJGLSourceLocation() {
-		Bundle bundleSrc = LWJGL_SRC_PLUGIN.getBundle();
-		if (bundleSrc == null)
-			return null;
-
-		String version = (String) bundleSrc.getHeaders().get(
-				Constants.BUNDLE_VERSION);
-		if (version == null) {
-			return null;
-		}
-
-		String bundlePath = getURL(bundleSrc);
-		if (bundlePath == null) {
-			return null;
-		}
-
-		File bundleLoc = new File(bundlePath);
-		if (bundleLoc.isDirectory()) {
-			String fullPath = bundleLoc.getAbsolutePath();
-			return Path.fromOSString(fullPath);
-		} else if (bundleLoc.isFile()) {
-			return Path.fromOSString(bundleLoc.getAbsolutePath());
-		}
-
-		return null;
-	}
-
-	public static String getLWJGLJavadocLocation(String filename) {
-		Bundle bundleDoc = LWJGL_DOC_PLUGIN.getBundle();
-		if (bundleDoc == null)
-			return null;
-
-		String version = (String) bundleDoc.getHeaders().get(
-				Constants.BUNDLE_VERSION);
-		if (version == null) {
-			return null;
-		}
-
-		String bundlePath = getURL(bundleDoc);
-		if (bundlePath == null) {
-			return null;
-		}
-
-		File bundleLoc = new File(bundlePath);
-		if (bundleLoc.isDirectory()) {
-			String fullPath = "jar:file:" + bundleLoc.getAbsolutePath() + "!"
-					+ filename;
-			return fullPath;
-		} else if (bundleLoc.isFile()) {
-			return bundleLoc.getAbsolutePath();
-		}
-
-		return null;
-	}
-
-	public static String getNativeLocation() {
+	private static String getNativeLocation() {
 
 		String basePath;
 		try {
@@ -202,7 +148,7 @@ public class BuildPathSupport {
 			return null;
 		}
 
-		Bundle bundle = LWJGL_PLUGIN.getBundle();
+		Bundle bundle = Platform.getBundle(LWJGL_PLUGIN_ID);
 		if (bundle == null)
 			return null;
 
@@ -235,31 +181,33 @@ public class BuildPathSupport {
 		}
 	}
 
-	public static IClasspathEntry getLWJGLClasspathEntry() {
-		return JavaCore
-				.newContainerEntry(LWJGLClasspathContainerInitializer.LWJGL_LIBRARY_PATH);
-	}
-
 	public static IClasspathEntry[] getLWJGLLibraryEntries() {
-		IPath bundleBase = getBundleLocation(LWJGL_PLUGIN);
-		if (bundleBase != null) {
-			IClasspathEntry[] entries = new IClasspathEntry[LIBS.length];
-			for (int i = 0; i < LIBS.length; i++) {
-				IAccessRule[] accessRules = {};
-				IClasspathAttribute[] attributes = { //
-						JavaCore.newClasspathAttribute(
-								IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
-								LIBS[i].docLocation),
-						JavaCore.newClasspathAttribute(
-								JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY,
-								LIBS[i].nativeLocation) };
 
-				entries[i] = JavaCore.newLibraryEntry(LIBS[i].jarLocation, LIBS[i].srcLocation,
-						null, accessRules, attributes, false);
-			}
-			return entries;
-
+		LibPathEntryData[] libData = createLibData();
+		if (libData == null) {
+			return null;
 		}
-		return null;
+		IClasspathEntry[] entries = new IClasspathEntry[libData.length];
+		for (int i = 0; i < libData.length; i++) {
+			IAccessRule[] accessRules = {};
+			ArrayList<IClasspathAttribute> attributes = new ArrayList<IClasspathAttribute>();
+			if (libData[i].docLocation != null) {
+				attributes.add(JavaCore.newClasspathAttribute(
+						IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
+						libData[i].docLocation));
+			}
+			if (libData[i].nativeLocation != null) {
+				attributes.add(JavaCore.newClasspathAttribute(
+						JavaRuntime.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY,
+						libData[i].nativeLocation));
+			}
+			IClasspathAttribute[] ca = new IClasspathAttribute[attributes
+					.size()];
+			attributes.toArray(ca);
+			entries[i] = JavaCore.newLibraryEntry(libData[i].jarLocation,
+					libData[i].srcLocation, null, accessRules, ca, false);
+		}
+		return entries;
+
 	}
 }

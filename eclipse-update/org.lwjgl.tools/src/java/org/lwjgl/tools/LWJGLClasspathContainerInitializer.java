@@ -97,7 +97,6 @@ public class LWJGLClasspathContainerInitializer extends
 					new IJavaProject[] { project },
 					new IClasspathContainer[] { container }, null);
 		}
-
 	}
 
 	private static boolean isValidLWJGLContainerPath(IPath path) {
